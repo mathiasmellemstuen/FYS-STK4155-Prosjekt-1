@@ -23,16 +23,18 @@ def create_design_matrix(x, y, max_polyniominal = 5):
     X[:, 0] = np.ones(len(X[:,0]))
     
     for i in range(len(x)):
-        for j in range(max_polyniominal):
-            X[i, j] = (x ** i) * (y ** j)
+        for j in range(0, max_polyniominal):
 
-    for i in range(max_polynominal + 1): 
-        for j in range(max_polynominal - i, 0, -1): 
+            poly_type = j % 3
+            current_polynominal = 1 + np.floor(j / 3)
+            print(poly_type)
+            if poly_type == 0:
+                X[i, j] = (x[i, 0] ** current_polynominal) 
+            if poly_type == 1:
+                X[i, j] = (y[i, 0] ** current_polynominal) 
+            if poly_type == 2:
+                X[i, j] = (x[i, 0] ** current_polynominal) * (y[i, 0] ** current_polynominal) 
 
-            if i == 0 and j == 0: 
-                break
-            
-    
     print(X)
 
 create_design_matrix(x, y)
