@@ -24,14 +24,51 @@ def FrankeFunction(x,y):
     return term1 + term2 + term3 + term4
 
 
+
 #for loop for permutations
-count = 0
-for i in range(6):
-    for j in range(5-i,-1, -1):
-        if i>0 or j>0:
-            print(i,j)
-            count += 1
-          
+#DELETE IF NOT NEEDED
+def permutations(n):
+    count = 0
+    perm = np.zeros((n*(n-1),2))
+    for i in range(n+1):
+        for j in range(n-i,-1, -1):
+            if i>0 or j>0:
+                perm[count,0]=i
+                perm[count,1]=j
+
+                count += 1
+
+    return perm
+
+def FrankeFunctionNoised(x, y, max_noise): 
+
+    ff = FrankeFunction(x, y)
+    noise = np.random.normal(0, 0.1, len(x)*len(x))
+    noise = noise.reshape(len(x), len(x))
+    return ff + noise
+
+FrankeFunctionNoised(x,y,0.1)
 
 
-print(count)
+def make_X(x,y,n): 
+    x = x.ravel()
+    y = y.ravel() 
+    X = np.c_[np.ones(len(x)),		  
+                        x,y,
+                        x**2,x*y,y**2,
+                        x**3,x**2*y,x*y**2,y**3,
+                        x**4,x**3*y,x**2*y**2,x*y**3,y**4,
+                        x**5,x**4*y,x**3*y**2,x**2*y**3,x*y**4,y**5]
+    
+    return X
+
+X = make_X(x,y,5)
+print(np.shape(X[0]))
+print(np.shape(X))
+
+def calc_beta(X,y):
+    #beta=np.linalg.inv(X.T.dot(X)).dot(X.T).dot(y)
+    beta = np.linalg.inv(X.T @ X) @ X.T @ y
+    return beta
+
+print(calc_beta(X,y.ravel()))
