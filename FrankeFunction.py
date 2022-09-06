@@ -9,6 +9,7 @@ ax = fig.gca(projection='3d')
 # Make data.
 x = np.arange(0, 1, 0.05)
 y = np.arange(0, 1, 0.05)
+#x_mesh, y_mesh = np.meshgrid(x,y)
 x, y = np.meshgrid(x,y)
 
 
@@ -23,7 +24,7 @@ def FrankeFunction(x,y):
 
     return term1 + term2 + term3 + term4
 
-
+z = FrankeFunction(x,y)
 
 #for loop for permutations
 #DELETE IF NOT NEEDED
@@ -47,7 +48,7 @@ def FrankeFunctionNoised(x, y, max_noise):
     noise = noise.reshape(len(x), len(x))
     return ff + noise
 
-FrankeFunctionNoised(x,y,0.1)
+#FrankeFunctionNoised(x,y,0.1)
 
 
 def make_X(x,y,n): 
@@ -68,7 +69,8 @@ print(np.shape(X))
 
 def calc_beta(X,y):
     #beta=np.linalg.inv(X.T.dot(X)).dot(X.T).dot(y)
+    #X = X + 0.0000001
     beta = np.linalg.inv(X.T @ X) @ X.T @ y
     return beta
 
-print(calc_beta(X,y.ravel()))
+print(calc_beta(X,z.ravel()))
