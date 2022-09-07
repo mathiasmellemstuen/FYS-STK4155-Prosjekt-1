@@ -44,7 +44,7 @@ def permutations(n):
 def FrankeFunctionNoised(x, y, max_noise): 
 
     ff = FrankeFunction(x, y)
-    noise = np.random.normal(0, 0.1, len(x)*len(x))
+    noise = np.random.normal(0, max_noise, len(x)*len(x))
     noise = noise.reshape(len(x), len(x))
     return ff + noise
 
@@ -73,4 +73,40 @@ def calc_beta(X,y):
     beta = np.linalg.inv(X.T @ X) @ X.T @ y
     return beta
 
-print(calc_beta(X,z.ravel()))
+beta = calc_beta(X,z.ravel())
+y_tilde = X@beta
+
+print("test")
+print(np.shape(z))
+print(np.shape(y_tilde))
+
+z_noise = FrankeFunctionNoised(x,y, 0.001)
+
+def MSE(y,y_tilde):
+    sum = 0
+    n = len(y)
+    for i in range(n):
+        sum += (y[i] - y_tilde[i])**2
+    return sum/n
+
+print(MSE(z_noise.ravel(), y_tilde))
+
+
+
+# Plot the surface.
+y_tilde = np.reshape(y_tilde, (20,20))
+surf = ax.plot_surface(x, y, y_tilde,
+            linewidth=0, antialiased=False)
+# Customize the z axis.
+ax.set_zlim(-0.10, 1.40)
+ax.zaxis.set_major_locator(LinearLocator(10))
+ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+# Add a color bar which maps values to colors.
+fig.colorbar(surf, shrink=0.5, aspect=5)
+
+surf = ax.plot_surface(x, y, z, cmap=cm.coolwarm,
+            linewidth=0, antialiased=False)
+# Customize the z axis.
+# Add a color bar which maps values to colors.
+fig.colorbar(surf, shrink=0.5, aspect=5)
+plt.show()
