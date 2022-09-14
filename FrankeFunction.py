@@ -4,6 +4,8 @@ from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 from random import random, seed
+import sklearn.preprocessing as sk
+
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 # Make data.
@@ -24,7 +26,6 @@ def FrankeFunction(x,y):
 
     return term1 + term2 + term3 + term4
 
-z = FrankeFunction(x,y)
 
 #for loop for permutations
 #DELETE IF NOT NEEDED
@@ -48,24 +49,52 @@ def FrankeFunctionNoised(x, y, max_noise):
     noise = noise.reshape(len(x), len(x))
     return ff + noise
 
-#FrankeFunctionNoised(x,y,0.1)
 
+z = FrankeFunctionNoised(x,y, 0.01)
 
-def make_X(x,y,n): 
+def make_X(x,y,n = 5): 
     x = x.ravel()
-    y = y.ravel() 
-    X = np.c_[np.ones(len(x)),		  
-                        x,y,
-                        x**2,x*y,y**2,
-                        x**3,x**2*y,x*y**2,y**3,
-                        x**4,x**3*y,x**2*y**2,x*y**3,y**4,
-                        x**5,x**4*y,x**3*y**2,x**2*y**3,x*y**4,y**5]
-    
+    y = y.ravel()
+    if n == 1:
+        X = np.c_[np.ones(len(x)),		  
+                            x,y]
+    if n == 2:
+        X = np.c_[np.ones(len(x)),		  
+                            x,y,
+                            x**2,x*y,y**2]
+    if n == 3:
+        X = np.c_[np.ones(len(x)),		  
+                            x,y,
+                            x**2,x*y,y**2,
+                            x**3,x**2*y,x*y**2,y**3]
+     
+    if n == 4:
+        X = np.c_[np.ones(len(x)),		  
+                            x,y,
+                            x**2,x*y,y**2,
+                            x**3,x**2*y,x*y**2,y**3,
+                            x**4,x**3*y,x**2*y**2,x*y**3,y**4]
+
+    if n == 5:
+        X = np.c_[np.ones(len(x)),		  
+                            x,y,
+                            x**2,x*y,y**2,
+                            x**3,x**2*y,x*y**2,y**3,
+                            x**4,x**3*y,x**2*y**2,x*y**3,y**4,
+                            x**5,x**4*y,x**3*y**2,x**2*y**3,x*y**4,y**5]
+        
     return X
 
 X = make_X(x,y,5)
-print(np.shape(X[0]))
-print(np.shape(X))
+
+
+#trying automated make X
+#from sklearn.preprocessing import PolynomialFeatures
+#n = 5
+#poly = PolynomialFeatures(n)
+#X = poly.fit_transform(x.ravel(), y.ravel())
+#print("X")
+#print(np.shape(X))
 
 def calc_beta(X,y):
     #beta=np.linalg.inv(X.T.dot(X)).dot(X.T).dot(y)
@@ -74,13 +103,10 @@ def calc_beta(X,y):
     return beta
 
 beta = calc_beta(X,z.ravel())
-y_tilde = X@beta
+y_tilde = X @ beta
 
-print("test")
-print(np.shape(z))
-print(np.shape(y_tilde))
 
-z_noise = FrankeFunctionNoised(x,y, 0.001)
+#z_noise = FrankeFunctionNoised(x,y, 0.001)
 
 def MSE(y,y_tilde):
     sum = 0
@@ -89,13 +115,12 @@ def MSE(y,y_tilde):
         sum += (y[i] - y_tilde[i])**2
     return sum/n
 
-print(MSE(z_noise.ravel(), y_tilde))
-
+    
 
 
 # Plot the surface.
-y_tilde = np.reshape(y_tilde, (20,20))
-surf = ax.plot_surface(x, y, y_tilde,
+y_tilde2D = np.reshape(y_tilde, (20,20))
+surf = ax.plot_surface(x, y, y_tilde2D,
             linewidth=0, antialiased=False)
 # Customize the z axis.
 ax.set_zlim(-0.10, 1.40)
@@ -110,3 +135,34 @@ surf = ax.plot_surface(x, y, z, cmap=cm.coolwarm,
 # Add a color bar which maps values to colors.
 fig.colorbar(surf, shrink=0.5, aspect=5)
 plt.show()
+
+def R2score(y,y_tilde):
+    y_mean = np.mean(y)
+    mse = MSE(y,y_tilde)
+    sum = 0
+    n = len(y)
+    for i in range(n):
+            sum += (y[i] - y_mean)**2
+    sum /= n 
+    return 1 - mse/sum
+
+
+def plot_MSE_R2_beta(x,y):
+    mse_arr = np.zeros(5)
+    R2_arr = np.zeros(5)
+    for n in range(1,6):
+        X = make_X(x,y,n)        
+        beta = calc_beta(X,z.ravel())
+        y_tilde = X @ beta
+        mse_arr[n-1] = MSE(z.ravel(), y_tilde)
+        R2_arr[n-1] = R2score(z.ravel(), y_tilde)
+        print(beta)
+    n_arr = np.linspace(1,5,5)
+    fig, axs = plt.subplots(2)
+    axs[0].plot(n_arr, mse_arr, label= "MSE")
+    axs[1].plot(n_arr, R2_arr, label= "R2")
+    plt.legend()
+    plt.show()
+
+
+plot_MSE_R2_beta(x,y)
