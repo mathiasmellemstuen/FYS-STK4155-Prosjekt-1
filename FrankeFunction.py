@@ -14,7 +14,6 @@ y = np.arange(0, 1, 0.05)
 #x_mesh, y_mesh = np.meshgrid(x,y)
 x, y = np.meshgrid(x,y)
 
-
 x_noise = np.random.normal(0,1,20)
 y_noise = np.random.normal(0,1,20)
 
@@ -25,7 +24,6 @@ def FrankeFunction(x,y):
     term4 = -0.2*np.exp(-(9*x-4)**2 - (9*y-7)**2)
 
     return term1 + term2 + term3 + term4
-
 
 #for loop for permutations
 #DELETE IF NOT NEEDED
@@ -52,7 +50,7 @@ def FrankeFunctionNoised(x, y, max_noise):
 
 z = FrankeFunctionNoised(x,y, 0.01)
 
-def make_X(x,y,n = 5): 
+def make_X(x,y,n = 5):
     x = x.ravel()
     y = y.ravel()
     if n == 1:
@@ -87,7 +85,6 @@ def make_X(x,y,n = 5):
 
 X = make_X(x,y,5)
 
-
 #trying automated make X
 #from sklearn.preprocessing import PolynomialFeatures
 #n = 5
@@ -115,9 +112,6 @@ def MSE(y,y_tilde):
         sum += (y[i] - y_tilde[i])**2
     return sum/n
 
-    
-
-
 # Plot the surface.
 y_tilde2D = np.reshape(y_tilde, (20,20))
 surf = ax.plot_surface(x, y, y_tilde2D,
@@ -137,14 +131,17 @@ fig.colorbar(surf, shrink=0.5, aspect=5)
 plt.show()
 
 def R2score(y,y_tilde):
+
     y_mean = np.mean(y)
-    mse = MSE(y,y_tilde)
-    sum = 0
-    n = len(y)
-    for i in range(n):
-            sum += (y[i] - y_mean)**2
-    sum /= n 
-    return 1 - mse/sum
+
+    divisor = 0
+    divident = 0
+
+    for i in range(len(y)):
+        divisor += (y[i] - y_tilde[i]) ** 2
+        divident += (y[i] - y_mean) ** 2
+
+    return 1 - (divisor / divident)
 
 
 def plot_MSE_R2_beta(x,y):
