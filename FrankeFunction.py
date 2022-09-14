@@ -5,6 +5,7 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 from random import random, seed
 import sklearn.preprocessing as sk
+from sklearn.model_selection import train_test_split
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
@@ -148,18 +149,18 @@ def plot_MSE_R2_beta(x,y):
     mse_arr = np.zeros(5)
     R2_arr = np.zeros(5)
     for n in range(1,6):
-        X = make_X(x,y,n)        
-        beta = calc_beta(X,z.ravel())
-        y_tilde = X @ beta
-        mse_arr[n-1] = MSE(z.ravel(), y_tilde)
-        R2_arr[n-1] = R2score(z.ravel(), y_tilde)
-        print(beta)
+        X = make_X(x,y,n)
+        X_train, X_test, y_train, y_test = train_test_split(X, z.ravel(), test_size=0.2)
+        beta = calc_beta(X_train, y_train)
+        y_tilde = X_test @ beta
+        mse_arr[n-1] = MSE(y_test, y_tilde)
+        R2_arr[n-1] = R2score(y_test, y_tilde)
+
     n_arr = np.linspace(1,5,5)
     fig, axs = plt.subplots(2)
     axs[0].plot(n_arr, mse_arr, label= "MSE")
     axs[1].plot(n_arr, R2_arr, label= "R2")
     plt.legend()
     plt.show()
-
 
 plot_MSE_R2_beta(x,y)
