@@ -4,10 +4,11 @@ from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 from random import random, seed
-import sklearn.preprocessing as sk
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+#fig = plt.figure()
+#ax = fig.gca(projection='3d')
 # Make data.
 x = np.arange(0, 1, 0.05)
 y = np.arange(0, 1, 0.05)
@@ -50,7 +51,6 @@ def FrankeFunctionNoised(x, y, max_noise):
     return ff + noise
 
 
-z = FrankeFunctionNoised(x,y, 0.01)
 
 def make_X(x,y,n = 5): 
     x = x.ravel()
@@ -85,9 +85,6 @@ def make_X(x,y,n = 5):
         
     return X
 
-X = make_X(x,y,5)
-
-
 #trying automated make X
 #from sklearn.preprocessing import PolynomialFeatures
 #n = 5
@@ -102,8 +99,6 @@ def calc_beta(X,y):
     beta = np.linalg.inv(X.T @ X) @ X.T @ y
     return beta
 
-beta = calc_beta(X,z.ravel())
-y_tilde = X @ beta
 
 
 #z_noise = FrankeFunctionNoised(x,y, 0.001)
@@ -119,22 +114,23 @@ def MSE(y,y_tilde):
 
 
 # Plot the surface.
-y_tilde2D = np.reshape(y_tilde, (20,20))
-surf = ax.plot_surface(x, y, y_tilde2D,
-            linewidth=0, antialiased=False)
-# Customize the z axis.
-ax.set_zlim(-0.10, 1.40)
-ax.zaxis.set_major_locator(LinearLocator(10))
-ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-# Add a color bar which maps values to colors.
-fig.colorbar(surf, shrink=0.5, aspect=5)
+def plot_surface(z, z_tilde):
+    z_tilde2D = np.reshape(z_tilde, (20,20))
+    surf = ax.plot_surface(x, y, z_tilde2D,
+                linewidth=0, antialiased=False)
+    # Customize the z axis.
+    ax.set_zlim(-0.10, 1.40)
+    ax.zaxis.set_major_locator(LinearLocator(10))
+    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+    # Add a color bar which maps values to colors.
+    fig.colorbar(surf, shrink=0.5, aspect=5)
 
-surf = ax.plot_surface(x, y, z, cmap=cm.coolwarm,
-            linewidth=0, antialiased=False)
-# Customize the z axis.
-# Add a color bar which maps values to colors.
-fig.colorbar(surf, shrink=0.5, aspect=5)
-plt.show()
+    surf = ax.plot_surface(x, y, z, cmap=cm.coolwarm,
+                linewidth=0, antialiased=False)
+    # Customize the z axis.
+    # Add a color bar which maps values to colors.
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    plt.show()
 
 def R2score(y,y_tilde):
     y_mean = np.mean(y)
@@ -147,22 +143,67 @@ def R2score(y,y_tilde):
     return 1 - mse/sum
 
 
-def plot_MSE_R2_beta(x,y):
-    mse_arr = np.zeros(5)
-    R2_arr = np.zeros(5)
+def plot_MSE_R2_beta(x,y,X,z):
+    mse_arr_train = np.zeros(5)
+    mse_arr_test = np.zeros(5)
+    R2_arr_train = np.zeros(5)
+    R2_arr_test = np.zeros(5)
     for n in range(1,6):
-        X = make_X(x,y,n)        
-        beta = calc_beta(X,z.ravel())
-        y_tilde = X @ beta
-        mse_arr[n-1] = MSE(z.ravel(), y_tilde)
-        R2_arr[n-1] = R2score(z.ravel(), y_tilde)
-        print(beta)
+        X = make_X(x,y,n)    
+        X_train, X_test, z_train, z_test= train_test_split(X, z, test_size=0.2)
+        #Scaling
+        X_train = (X_train - np.mean(X_train))/np.std(X_train)
+        X_test = (X_test - np.mean(X_test))/np.std(X_test)
+        z_train = (z_train - np.mean(z_train))/np.std(z_train)
+        z_test = (z_test - np.mean(z_test))/np.std(z_test)
+        
+        beta = calc_beta(X_train,z_train)
+        z_tilde_test = X_test @ beta
+        z_tilde_train = X_train @ beta
+
+        mse_arr_train[n-1] = MSE(z_train, z_tilde_train)
+        mse_arr_test[n-1] = MSE(z_test, z_tilde_test)
+        R2_arr_train[n-1] = R2score(z_train, z_tilde_train)
+        R2_arr_test[n-1] = R2score(z_test, z_tilde_test)
+
     n_arr = np.linspace(1,5,5)
     fig, axs = plt.subplots(2)
-    axs[0].plot(n_arr, mse_arr, label= "MSE")
-    axs[1].plot(n_arr, R2_arr, label= "R2")
-    plt.legend()
+    axs[0].plot(n_arr, mse_arr_train, label= "MSE_train")
+    axs[0].plot(n_arr, mse_arr_test, label= "MSE_test")
+    axs[0].legend()
+
+    axs[1].plot(n_arr, R2_arr_train, label= "R2_train")
+    axs[1].plot(n_arr, R2_arr_test, label= "R2_test")
+
+    axs[1].legend()
     plt.show()
 
 
-plot_MSE_R2_beta(x,y)
+if __name__ == "__main__":
+    
+    np.random.seed(10)
+
+    X = make_X(x,y,5)
+    z = FrankeFunctionNoised(x,y, 0.01)
+    
+    #Splitting data
+    z_flat = z.ravel()
+    X_train, X_test, z_train, z_test = train_test_split(X, z_flat, test_size=0.2)
+
+    print(X_train.shape, X_test.shape)
+    
+    #Scaling
+    X_train = (X_train - np.mean(X_train))/np.std(X_train)
+    X_test = (X_test - np.mean(X_test))/np.std(X_test)
+
+    z_train = (z_train - np.mean(z_train))/np.std(z_train)
+    z_test = (z_test - np.mean(z_test))/np.std(z_test)
+
+
+    beta = calc_beta(X,z_flat)
+    z_tilde = X @ beta
+    #scaler = sk.StandardScaler()
+
+    plot_MSE_R2_beta(x,y, X, z_flat)
+    #plot_surface(z, z_tilde)
+
