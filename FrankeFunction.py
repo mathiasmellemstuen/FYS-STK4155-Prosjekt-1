@@ -7,8 +7,7 @@ from random import random, seed
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-#fig = plt.figure()
-#ax = fig.gca(projection='3d')
+
 # Make data.
 x = np.arange(0, 1, 0.05)
 y = np.arange(0, 1, 0.05)
@@ -85,13 +84,22 @@ def make_X(x,y,n = 5):
         
     return X
 
-#trying automated make X
-#from sklearn.preprocessing import PolynomialFeatures
-#n = 5
-#poly = PolynomialFeatures(n)
-#X = poly.fit_transform(x.ravel(), y.ravel())
-#print("X")
-#print(np.shape(X))
+#automated make X
+def create_X(x, y, n ):
+	if len(x.shape) > 1:
+		x = np.ravel(x)
+		y = np.ravel(y)
+
+	N = len(x)
+	l = int((n+1)*(n+2)/2)		# Number of elements in beta
+	X = np.ones((N,l))
+
+	for i in range(1,n+1):
+		q = int((i)*(i+1)/2)
+		for k in range(i+1):
+			X[:,q+k] = (x**(i-k))*(y**k)
+
+	return X
 
 def calc_beta(X,y):
     #beta=np.linalg.inv(X.T.dot(X)).dot(X.T).dot(y)
@@ -115,6 +123,8 @@ def MSE(y,y_tilde):
 
 # Plot the surface.
 def plot_surface(z, z_tilde):
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
     z_tilde2D = np.reshape(z_tilde, (20,20))
     surf = ax.plot_surface(x, y, z_tilde2D,
                 linewidth=0, antialiased=False)
@@ -143,11 +153,13 @@ def R2score(y,y_tilde):
     return 1 - mse/sum
 
 
-def plot_MSE_R2_beta(x,y,X,z):
+def plot_MSE_R2_beta(x,y):
     mse_arr_train = np.zeros(5)
     mse_arr_test = np.zeros(5)
     R2_arr_train = np.zeros(5)
     R2_arr_test = np.zeros(5)
+    z = FrankeFunctionNoised(x,y, 0.001)
+    z = z.ravel()
     for n in range(1,6):
         X = make_X(x,y,n)    
         X_train, X_test, z_train, z_test= train_test_split(X, z, test_size=0.2)
@@ -170,14 +182,49 @@ def plot_MSE_R2_beta(x,y,X,z):
     fig, axs = plt.subplots(2)
     axs[0].plot(n_arr, mse_arr_train, label= "MSE_train")
     axs[0].plot(n_arr, mse_arr_test, label= "MSE_test")
+    axs[0].set_xlabel("Polynomial degree")
+    axs[0].set_ylabel("MSE")
     axs[0].legend()
 
     axs[1].plot(n_arr, R2_arr_train, label= "R2_train")
     axs[1].plot(n_arr, R2_arr_test, label= "R2_test")
-
+    axs[1].set_xlabel("Polynomial degree")
+    axs[1].set_ylabel("R2")
     axs[1].legend()
+    plt.tight_layout()
     plt.show()
 
+def plot_MSE_variance(x,y):
+    num = 100
+    val = 0.1
+    mse_arr_train = np.zeros(num)
+    mse_arr_test = np.zeros(num)
+    for i in range(num):
+        z = FrankeFunctionNoised(x,y, val*i)
+        z = z.ravel()
+        X = make_X(x,y,5)    
+        X_train, X_test, z_train, z_test= train_test_split(X, z, test_size=0.2)
+        #Scaling
+        X_train = (X_train - np.mean(X_train))/np.std(X_train)
+        X_test = (X_test - np.mean(X_test))/np.std(X_test)
+        z_train = (z_train - np.mean(z_train))/np.std(z_train)
+        z_test = (z_test - np.mean(z_test))/np.std(z_test)
+        
+        beta = calc_beta(X_train,z_train)
+        z_tilde_test = X_test @ beta
+        z_tilde_train = X_train @ beta
+
+        mse_arr_train[i] = MSE(z_train, z_tilde_train)
+        mse_arr_test[i] = MSE(z_test, z_tilde_test)
+
+    n_arr = np.array([val*i for i in range(num)])
+    plt.plot(n_arr, mse_arr_train, label= "MSE_train")
+    plt.plot(n_arr, mse_arr_test, label= "MSE_test")
+    plt.xlabel("Variance")
+    plt.ylabel("MSE")
+    plt.legend()
+
+    plt.show()
 
 if __name__ == "__main__":
     
@@ -204,6 +251,7 @@ if __name__ == "__main__":
     z_tilde = X @ beta
     #scaler = sk.StandardScaler()
 
-    plot_MSE_R2_beta(x,y, X, z_flat)
+    plot_MSE_R2_beta(x,y)
     #plot_surface(z, z_tilde)
+    #plot_MSE_variance(x,y)
 
