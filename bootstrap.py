@@ -7,7 +7,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.utils import resample
 from sklearn.linear_model import Ridge
 
-from FrankeFunction import make_X, MSE, FrankeFunctionNoised, calc_beta, create_X
+from FrankeFunction import make_X, MSE, FrankeFunctionNoised, calc_beta, create_X, FrankeFunction
 
 
 def Frankevalues(x, noise=0.01):

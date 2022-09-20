@@ -1,47 +1,76 @@
-from FrankeFunction import FrankeFunction, FrankeFunctionNoised
-import numpy as np
+from cProfile import label
+from FrankeFunction import FrankeFunctionNoised
+from mean_square_error import MSE
+from r2_score import R2score
+from design_matrix import create_design_matrix
+from sklearn.model_selection import train_test_split
+from ordinary_least_squares import calc_beta
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
-from matplotlib.ticker import LinearLocator, FormatStrFormatter
+import numpy as np
 
-# Creating random data
-x = np.arange(0, 1, 0.05)
-y = np.arange(0, 1, 0.05)
+if __name__ == "__main__":
 
-# Maximum number of polynominals, will also determine size of design matrix
-max_polynominal = 5
-def create_design_matrix(x, y, max_polyniominal = 5):
-    X = np.ones((len(x), max_polyniominal))
+    # Making data, 20 samples
+    x = np.arange(0, 1, 0.05)
+    y = np.arange(0, 1, 0.05)
+    x, y = np.meshgrid(x,y)
+    z = FrankeFunctionNoised(x, y, 0.01)
 
-    for i in range(len(x)):
-        for j in range(1, max_polyniominal):
+    # 20% of data is used for test, 80% training
+    test_size = 0.2
 
-            poly_type = (j - 1) % 3
-            current_polynominal = 1 + np.floor(j / 4)
+    max_polynomial = 5
 
-            if poly_type == 0:
-                X[i, j] = (x[i] ** current_polynominal) 
-            elif poly_type == 1:
-                X[i, j] = (y[i] ** current_polynominal) 
-            elif poly_type == 2:
-                X[i, j] = (x[i] ** current_polynominal) * (y[i] ** current_polynominal) 
-    return X
+    mse_values_test = []
+    mse_values_train = []
+    r2_score_values_test = []
+    r2_score_values_train = []
+    beta_values = []
+    
+    # Doing calculations for each polynomial
+    for current_polynominal in range(1, max_polynomial + 1): 
 
-X = create_design_matrix(x, y, 6)
-print(X)
+        X = create_design_matrix(x, y, current_polynominal)
+        X_train, X_test, y_train, y_test = train_test_split(X, z.ravel(), test_size=test_size)
+        
+        X_train = (X_train - np.mean(X_train))/np.std(X_train)
+        X_test = (X_test - np.mean(X_test))/np.std(X_test)
+        y_train = (y_train - np.mean(y_train))/np.std(y_train)
+        y_test = (y_test - np.mean(y_test))/np.std(y_test)
 
-# Creating meshgrid
-x, y = np.meshgrid(x, y)
-z = FrankeFunctionNoised(x, y, 0.05)
+        beta = calc_beta(X_train, y_train)
+        beta_values.append(np.mean(beta))
 
-figure = plt.figure()
-ax = figure.gca(projection="3d")
-surface = ax.plot_surface(x, y, z, cmap=cm.coolwarm, linewidth = 0, antialiased = False)
-ax.set_zlim(-0.10, 1.40)
-ax.zaxis.set_major_locator(LinearLocator(10))
-ax.zaxis.set_major_formatter(FormatStrFormatter("%.02f"))
+        y_tilde_test = X_test @ beta
+        y_tilde_train = X_train @ beta
 
-figure.colorbar(surface, shrink=0.5, aspect=5)
+        mse_values_test.append(np.mean(MSE(y_test, y_tilde_test)))
+        r2_score_values_test.append(np.mean(R2score(y_test, y_tilde_test)))
+        mse_values_train.append(np.mean(MSE(y_train, y_tilde_train)))
+        r2_score_values_train.append(np.mean(R2score(y_train, y_tilde_train)))
 
-plt.show()
+    fig, axs = plt.subplots(2)
+    fig.tight_layout(pad=5.0)
+
+    axs[0].plot(np.arange(1, max_polynomial + 1, 1), mse_values_test, label="MSE test")
+    axs[0].plot(np.arange(1, max_polynomial + 1, 1), mse_values_train, label="MSE train")
+    axs[0].legend()
+    axs[0].set_title("MSE")
+    axs[0].set_xlabel("Polynomials")
+    axs[0].set_ylabel("MSE")
+
+    axs[1].plot(np.arange(1, max_polynomial + 1, 1), r2_score_values_test, label="R2 score test")
+    axs[1].plot(np.arange(1, max_polynomial + 1, 1), r2_score_values_train, label="R2 score train")
+    axs[1].legend()
+    axs[1].set_title("R2 score")
+    axs[1].set_xlabel("Polynomials")
+    axs[1].set_ylabel("R2 score")
+
+    plt.figure()
+    plt.plot(np.arange(1, max_polynomial + 1, 1), beta_values, label="Beta")
+    plt.legend()
+    plt.title("Beta")
+    plt.xlabel("Polynomials")
+    plt.ylabel("Beta")
+
+    plt.show()
