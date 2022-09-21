@@ -1,22 +1,4 @@
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt
-from matplotlib import cm
-from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
-from random import random, seed
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-
-
-# Make data.
-x = np.arange(0, 1, 0.05)
-y = np.arange(0, 1, 0.05)
-#x_mesh, y_mesh = np.meshgrid(x,y)
-x, y = np.meshgrid(x,y)
-
-
-x_noise = np.random.normal(0,1,20)
-y_noise = np.random.normal(0,1,20)
 
 def FrankeFunction(x,y):
     term1 = 0.75*np.exp(-(0.25*(9*x-2)**2) - 0.25*((9*y-2)**2))
@@ -25,22 +7,6 @@ def FrankeFunction(x,y):
     term4 = -0.2*np.exp(-(9*x-4)**2 - (9*y-7)**2)
 
     return term1 + term2 + term3 + term4
-
-
-#for loop for permutations
-#DELETE IF NOT NEEDED
-def permutations(n):
-    count = 0
-    perm = np.zeros((n*(n-1),2))
-    for i in range(n+1):
-        for j in range(n-i,-1, -1):
-            if i>0 or j>0:
-                perm[count,0]=i
-                perm[count,1]=j
-
-                count += 1
-
-    return perm
 
 def FrankeFunctionNoised(x, y, max_noise): 
 
