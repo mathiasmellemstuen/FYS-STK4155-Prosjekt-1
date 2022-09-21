@@ -195,35 +195,35 @@ def plot_MSE_R2_beta(x,y):
     plt.show()
 
 def plot_MSE_variance(x,y):
-    num = 100
+    num = 13
     val = 0.1
-    mse_arr_train = np.zeros(num)
-    mse_arr_test = np.zeros(num)
-    for i in range(num):
-        z = FrankeFunctionNoised(x,y, val*i)
+    mse_arr_train = np.zeros(num-1)
+    mse_arr_test = np.zeros(num-1)
+    for i in range(1,num):
+        z = FrankeFunctionNoised(x,y, val)
         z = z.ravel()
-        X = make_X(x,y,5)    
+        X = create_X(x,y, i)
         X_train, X_test, z_train, z_test= train_test_split(X, z, test_size=0.2)
         #Scaling
-        X_train = (X_train - np.mean(X_train))/np.std(X_train)
-        X_test = (X_test - np.mean(X_test))/np.std(X_test)
-        z_train = (z_train - np.mean(z_train))/np.std(z_train)
-        z_test = (z_test - np.mean(z_test))/np.std(z_test)
+        #X_train = (X_train - np.mean(X_train))/np.std(X_train)
+        #X_test = (X_test - np.mean(X_test))/np.std(X_test)
+        #z_train = (z_train - np.mean(z_train))/np.std(z_train)
+        #z_test = (z_test - np.mean(z_test))/np.std(z_test)
         
         beta = calc_beta(X_train,z_train)
         z_tilde_test = X_test @ beta
         z_tilde_train = X_train @ beta
 
-        mse_arr_train[i] = MSE(z_train, z_tilde_train)
-        mse_arr_test[i] = MSE(z_test, z_tilde_test)
+        mse_arr_train[i-1] = MSE(z_train, z_tilde_train)
+        mse_arr_test[i-1] = MSE(z_test, z_tilde_test)
 
-    n_arr = np.array([val*i for i in range(num)])
+    n_arr = np.array([i for i in range(1,num)])
     plt.plot(n_arr, mse_arr_train, label= "MSE_train")
     plt.plot(n_arr, mse_arr_test, label= "MSE_test")
-    plt.xlabel("Variance")
+    plt.xlabel("Polynomials")
     plt.ylabel("MSE")
     plt.legend()
-
+    plt.savefig("MSE_test_train.png")
     plt.show()
 
 if __name__ == "__main__":
@@ -251,7 +251,7 @@ if __name__ == "__main__":
     z_tilde = X @ beta
     #scaler = sk.StandardScaler()
 
-    plot_MSE_R2_beta(x,y)
+    #plot_MSE_R2_beta(x,y)
     #plot_surface(z, z_tilde)
-    #plot_MSE_variance(x,y)
+    plot_MSE_variance(x,y)
 
