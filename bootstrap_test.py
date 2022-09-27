@@ -50,7 +50,6 @@ for degree in range(start_degree,maxdegree):
     #model = make_pipeline(PolynomialFeatures(degree=degree), LinearRegression(fit_intercept=False))
     #z_pred = np.empty((z_test.shape[0] * z_test.shape[1], n_bootstraps))
     z_pred = np.empty((len(z_test), n_bootstraps))
-
     X_test = create_X(x_test,y_test,degree)
     X_train = create_X(x_train,y_train,degree)
     

@@ -9,7 +9,6 @@ from sklearn.utils import resample
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import KFold
 from FrankeFunction import make_X, MSE, FrankeFunctionNoised, calc_beta, create_X
-
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import Ridge
 
