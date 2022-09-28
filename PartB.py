@@ -26,6 +26,8 @@ if __name__ == "__main__":
     r2_score_values_train = []
     beta_values = []
     
+    plt.plot()
+
     # Doing calculations for each polynomial
     for current_polynominal in range(1, max_polynomial + 1): 
 
@@ -40,6 +42,9 @@ if __name__ == "__main__":
 
         # Using training data to create beta
         beta = calc_beta(X_train, y_train)
+        x_arr = np.ones(len(beta)) * current_polynominal
+        plt.scatter(x_arr, beta)
+
         beta_values.append(np.mean(beta))
 
         # Using beta and test data to pretict y
@@ -52,6 +57,7 @@ if __name__ == "__main__":
         mse_values_train.append(np.mean(MSE(y_train, y_tilde_train)))
         r2_score_values_train.append(np.mean(R2score(y_train, y_tilde_train)))
 
+    plt.show()
     fig, axs = plt.subplots(2)
     fig.tight_layout(pad=5.0)
 

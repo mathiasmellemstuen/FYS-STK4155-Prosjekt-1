@@ -1,3 +1,4 @@
+from tkinter import W
 import numpy as np
 from FrankeFunction import FrankeFunctionNoised
 from ordinary_least_squares import calc_beta
@@ -7,15 +8,15 @@ from mean_square_error import MSE
 import matplotlib.pyplot as plt
 
 # Making data
-x = np.arange(0, 1, 0.05)
-y = np.arange(0, 1, 0.05)
+x = np.arange(0, 1, 0.075)
+y = np.arange(0, 1, 0.075)
 x, y = np.meshgrid(x,y)
 z = FrankeFunctionNoised(x, y, 0.01)
 x = x.ravel()
 y = y.ravel()
 z = z.ravel()
 
-k = 5
+k = 15
 k_fold = KFold(n_splits=k)
 max_degree = 11
 
@@ -23,7 +24,6 @@ mse_values = np.zeros(max_degree)
 
 for degree in range(0, max_degree):
 
-    i = 0
     current_mse_values = []
     X = create_design_matrix(x, y, degree)
 
@@ -33,14 +33,14 @@ for degree in range(0, max_degree):
         X_test = X[test_inds]
         z_train = z[train_inds]
         z_test = z[test_inds]
-
+        
         beta = calc_beta(X_train, z_train)
         y_tilde = X_test @ beta
         current_mse_values.append(np.mean(MSE(z_test, y_tilde)))
 
     mse_values[degree] = np.mean(current_mse_values)
 
-print(mse_values)
+
 plt.figure()
 plt.plot(np.arange(0, degree + 1, 1), mse_values)
 plt.show()
