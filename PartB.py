@@ -25,6 +25,8 @@ if __name__ == "__main__":
     r2_score_values_test = []
     r2_score_values_train = []
     beta_values = []
+
+    plt.plot()
     
     # Doing calculations for each polynomial
     for current_polynominal in range(1, max_polynomial + 1): 
@@ -40,7 +42,10 @@ if __name__ == "__main__":
 
         # Using training data to create beta
         beta = calc_beta(X_train, y_train)
-        beta_values.append(np.mean(beta))
+        x_arr = np.ones(len(beta)) * current_polynominal
+        plt.scatter(x_arr, beta)
+        #beta_values.append(np.mean(beta))
+        beta_values.append(beta)
 
         # Using beta and test data to pretict y
         y_tilde_test = X_test @ beta
@@ -52,6 +57,7 @@ if __name__ == "__main__":
         mse_values_train.append(np.mean(MSE(y_train, y_tilde_train)))
         r2_score_values_train.append(np.mean(R2score(y_train, y_tilde_train)))
 
+    plt.show()
     fig, axs = plt.subplots(2)
     fig.tight_layout(pad=5.0)
 
@@ -72,11 +78,24 @@ if __name__ == "__main__":
     axs[1].set_ylabel("R2 score")
 
     # Plotting betas for each polynomial
+    #plt.figure()
+    #plt.plot(np.arange(1, max_polynomial + 1, 1), beta_values, label="Beta")
+    #plt.legend()
+    #plt.title("Beta")
+    #plt.xlabel("Polynomials")
+    #plt.ylabel("Beta")
+
+    #plt.show()
+
+    # Alternative plotting of betas
     plt.figure()
-    plt.plot(np.arange(1, max_polynomial + 1, 1), beta_values, label="Beta")
+    plt.plot()
+    for i in range(len(beta_values)):
+        plt.plot(np.arange(1, len(beta_values[i])+1), beta_values[i], label = "pol " + str(i + 1))
+        plt.scatter(np.arange(1, len(beta_values[i])+1), beta_values[i])
     plt.legend()
-    plt.title("Beta")
-    plt.xlabel("Polynomials")
-    plt.ylabel("Beta")
+    plt.title("Beta values for different polynomials")
+    plt.xlabel("betas")
+    plt.ylabel("value")
 
     plt.show()
