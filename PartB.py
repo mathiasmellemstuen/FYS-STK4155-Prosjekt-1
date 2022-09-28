@@ -27,7 +27,7 @@ if __name__ == "__main__":
     beta_values = []
 
     plt.plot()
-    
+
     # Doing calculations for each polynomial
     for current_polynominal in range(1, max_polynomial + 1): 
 
