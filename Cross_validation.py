@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from linear_model import LinearModel, LinearModelType
 
 
-def calculate_stats_with_crossvalidation(X, z, k, linear_model): 
+def calculate_stats_with_crossvalidation(X, z, k, linear_model : LinearModel): 
 
     k_fold = KFold(n_splits=k)
 
@@ -29,38 +29,9 @@ def calculate_stats_with_crossvalidation(X, z, k, linear_model):
         error = np.mean(MSE(z_test, y_tilde))
         current_error_values.append(error)
     
-    
     # TODO: Return bias and variance
     error = np.mean(current_error_values)
     bias = None
     variance = None
+
     return error, bias, variance
-
-
-if __name__ == "__main__": 
-
-    np.random.seed(1234)
-
-    # Making data
-    x = np.arange(0, 1, 0.075)
-    y = np.arange(0, 1, 0.075)
-    x, y = np.meshgrid(x,y)
-    z = FrankeFunctionNoised(x, y, 0.01)
-    x = x.ravel()
-    y = y.ravel()
-    z = z.ravel()
-
-    k = 15
-    max_degree = 11
-
-    lm = LinearModel(LinearModelType.OLS)
-    mse_values = np.zeros(max_degree)
-
-    for degree in range(0, max_degree): 
-        X = create_design_matrix(x, y, degree)
-        error, bias, variance = calculate_stats_with_crossvalidation(X, z, k, lm)
-        mse_values[degree] = error
-
-    plt.figure()
-    plt.plot(np.arange(0, degree + 1, 1), mse_values)
-    plt.show()

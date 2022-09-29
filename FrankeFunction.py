@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 def FrankeFunction(x,y):
+
     term1 = 0.75*np.exp(-(0.25*(9*x-2)**2) - 0.25*((9*y-2)**2))
     term2 = 0.75*np.exp(-((9*x+1)**2)/49.0 - 0.1*(9*y+1))
     term3 = 0.5*np.exp(-(9*x-7)**2/4.0 - 0.25*((9*y-3)**2))
@@ -22,7 +23,16 @@ def FrankeFunctionNoised(x, y, max_noise):
     noise = noise.reshape(len(x), len(x))
     return ff + noise
 
-# Plot the surface.
+def create_data_samples_with_franke(max_noise = 0.01): 
+
+    x = np.arange(0, 1, 0.075)
+    y = np.arange(0, 1, 0.075)
+    x, y = np.meshgrid(x,y)
+    z = FrankeFunctionNoised(x,y,max_noise)
+
+    return x, y, z
+
+
 def plot_surface(x, y, z, z_tilde):
     fig = plt.figure()
     ax = fig.gca(projection='3d')

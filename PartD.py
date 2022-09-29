@@ -1,42 +1,34 @@
 import numpy as np
-from ridge_regression import ridge_beta
 from mean_square_error import MSE
 from design_matrix import create_design_matrix
 from sklearn.model_selection import train_test_split
-from FrankeFunction import FrankeFunction, FrankeFunctionNoised
+from FrankeFunction import FrankeFunctionNoised, create_data_samples_with_franke
 import matplotlib.pyplot as plt
+from linear_model import LinearModel, LinearModelType
+from cross_validation import calculate_stats_with_crossvalidation
 
-x = np.arange(0, 1, 0.05)
-y = np.arange(0, 1, 0.05)
-x, y = np.meshgrid(x,y)
-z = FrankeFunctionNoised(x, y, 0.01)
-max_polynomial = 5
+if __name__ == "__main__": 
 
-nlambdas = 10
-MSE_values_predict = np.zeros((max_polynomial, nlambdas))
-MSE_values_train = np.zeros((max_polynomial, nlambdas))
+    np.random.seed(1234)
 
-lambdas = np.logspace(-3, 1, nlambdas)
+    # Making data
+    x, y, z = create_data_samples_with_franke()
 
-for current_polynomial in range(1, max_polynomial + 1):
-    X = create_design_matrix(x, y, current_polynomial)
-    X_train, X_test, z_train, z_test = train_test_split(X, z.ravel(), test_size=0.2)
-    for i in range(nlambdas):
-        lam = lambdas[i]
-        Ridge_Beta = ridge_beta(X_train, z_train, lam)
+    x = x.ravel()
+    y = y.ravel()
+    z = z.ravel()
 
-        z_tilde = X_train @ Ridge_Beta
-        z_predict = X_test @ Ridge_Beta
+    k = 15
+    max_degree = 11
 
-        MSE_values_predict[current_polynomial-1][i] = MSE(z_test, z_predict)
-        MSE_values_train[current_polynomial-1][i] = MSE(z_train, z_tilde)
+    lm = LinearModel(LinearModelType.OLS)
+    mse_values = np.zeros(max_degree)
 
-plt.figure()
-for i in range(max_polynomial):
-    plt.plot(np.log10(lambdas), MSE_values_train[i], label = 'MSE train, pol = ' + str(i+1))
-    plt.plot(np.log10(lambdas), MSE_values_predict[i], label = 'MSE test, pol = ' + str(i+1))
+    for degree in range(0, max_degree): 
+        X = create_design_matrix(x, y, degree)
+        error, bias, variance = calculate_stats_with_crossvalidation(X, z, k, lm)
+        mse_values[degree] = error
 
-plt.xlabel('log10(lambda)')
-plt.ylabel('MSE')
-plt.legend()
-plt.show()
+    plt.figure()
+    plt.plot(np.arange(0, degree + 1, 1), mse_values)
+    plt.show()

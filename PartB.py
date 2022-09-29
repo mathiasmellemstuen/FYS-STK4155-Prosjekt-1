@@ -1,4 +1,4 @@
-from FrankeFunction import FrankeFunctionNoised
+from FrankeFunction import FrankeFunctionNoised, create_data_samples_with_franke
 from mean_square_error import MSE
 from r2_score import R2score
 from design_matrix import create_design_matrix
@@ -9,11 +9,9 @@ from linear_model import LinearModel, LinearModelType
 
 if __name__ == "__main__":
 
-    # Making data, 20 samples
-    x = np.arange(0, 1, 0.05)
-    y = np.arange(0, 1, 0.05)
-    x, y = np.meshgrid(x,y)
-    z = FrankeFunctionNoised(x, y, 0.01)
+    np.random.seed(1234)
+
+    x, y, z = create_data_samples_with_franke()
 
     # 20% of data is used for test, 80% training
     test_size = 0.2
@@ -41,7 +39,6 @@ if __name__ == "__main__":
 
         # Using training data to create beta
         lm.fit(X_train, y_train)
-
 
         # Using beta and test data to pretict y
         y_tilde_test = lm.predict(X_test)

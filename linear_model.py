@@ -10,11 +10,11 @@ class LinearModelType(Enum):
 class LinearModel: 
     def __init__(self, linear_model_type: LinearModelType):
         self.current_linear_model_type = linear_model_type
-        self.hyperparameter_lambda = 1
-        self.lasso_model = Lasso(alpha = self.hyperparameter_lambda)
+        self.lmda = 1
+        self.lasso_model = Lasso(alpha = self.lmda)
         self.betas = None
 
-    def fit(self, X, y): 
+    def fit(self, X, y):
         if self.current_linear_model_type == LinearModelType.OLS: 
             self.ordinary_least_squares_fit(X, y)
 
@@ -38,11 +38,12 @@ class LinearModel:
         self.betas =  np.linalg.pinv(X.T @ X) @ X.T @ y
 
     def ridge_fit(self, X, y): 
-        self.betas =  np.linalg.pinv(X.T @ X + (self.hyperparameter_lambda * np.identity(X.shape))) @ X.T @ y
+        I = np.eye(len(X[0]), len(X[0]))
+        self.betas = np.linalg.pinv(X.T @ X + self.lmda * I) @ X.T @ y
 
     def set_lambda(self, lmda):
-        self.hyperparameter_lambda = lmda
-        self.lasso_model = Lasso(alpha = self.hyperparameter_lambda)
+        self.lmda = lmda
+        self.lasso_model = Lasso(alpha = self.lmda)
 
     def set_linear_model_type(self, type: LinearModelType): 
         self.current_linear_model_type = type
