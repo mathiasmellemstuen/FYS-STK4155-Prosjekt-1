@@ -13,8 +13,6 @@ def calculate_stats_with_crossvalidation(X, z, k, linear_model : LinearModel):
     k_fold = KFold(n_splits=k)
 
     current_error_values = []
-    current_bias_values = []
-    current_variance_values = []
 
     for train_inds, test_inds in k_fold.split(X):
 
@@ -31,7 +29,5 @@ def calculate_stats_with_crossvalidation(X, z, k, linear_model : LinearModel):
     
     # TODO: Return bias and variance
     error = np.mean(current_error_values)
-    bias = None
-    variance = None
 
-    return error, bias, variance
+    return error
