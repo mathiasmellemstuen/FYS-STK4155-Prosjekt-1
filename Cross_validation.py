@@ -119,7 +119,7 @@ for lmb in lambdas:
 
 plt.figure()
 
-#plt.plot(np.log10(lambdas), estimated_mse_sklearn*50, label = 'cross_val_score')
+#plt.plot(np.log10(lambdas), estimated_mse_sklearn*np.size(zpred), label = 'cross_val_score')
 plt.plot(np.log10(lambdas), estimated_mse_sklearn, label = 'cross_val_score')
 plt.plot(np.log10(lambdas), estimated_mse_KFold, 'r--', label = 'KFold')
 
