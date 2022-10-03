@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from FrankeFunction import FrankeFunctionNoised, create_data_samples_with_franke
 import matplotlib.pyplot as plt
 from linear_model import LinearModel, LinearModelType
-from cross_validation import calculate_stats_with_crossvalidation
+from Cross_validation import calculate_stats_with_crossvalidation
 from bootstrap import calculate_stats_with_bootstrap
 
 if __name__ == "__main__": 

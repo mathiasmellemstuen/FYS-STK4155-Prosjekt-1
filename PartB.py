@@ -22,7 +22,7 @@ if __name__ == "__main__":
     mse_values_train = []
     r2_score_values_test = []
     r2_score_values_train = []
-    
+
     lm = LinearModel(LinearModelType.OLS)
 
     # Doing calculations for each polynomial
@@ -54,19 +54,20 @@ if __name__ == "__main__":
     fig.tight_layout(pad=5.0)
 
     # Plotting mean square error for each polynomial
-    axs[0].plot(np.arange(1, max_polynomial + 1, 1), mse_values_test, label="MSE test")
-    axs[0].plot(np.arange(1, max_polynomial + 1, 1), mse_values_train, label="MSE train")
+    axs[0].plot(np.arange(1, max_polynomial + 1, 1), mse_values_test, label=r"MSE test")
+    axs[0].plot(np.arange(1, max_polynomial + 1, 1), mse_values_train, label=r"MSE train")
     axs[0].legend()
-    axs[0].set_title("MSE")
-    axs[0].set_xlabel("Polynomials")
-    axs[0].set_ylabel("MSE")
+    axs[0].set_title(r"MSE")
+    axs[0].set_xlabel(r"Polynomials")
+    axs[0].set_ylabel(r"MSE")
     
     # Plotting R2 score for each polynomial
-    axs[1].plot(np.arange(1, max_polynomial + 1, 1), r2_score_values_test, label="R2 score test")
-    axs[1].plot(np.arange(1, max_polynomial + 1, 1), r2_score_values_train, label="R2 score train")
+    axs[1].plot(np.arange(1, max_polynomial + 1, 1), r2_score_values_test, label=r"$R^2$ score test")
+    axs[1].plot(np.arange(1, max_polynomial + 1, 1), r2_score_values_train, label=r"$R^2$ score train")
     axs[1].legend()
-    axs[1].set_title("R2 score")
-    axs[1].set_xlabel("Polynomials")
-    axs[1].set_ylabel("R2 score")
+    axs[1].set_title(r"$R^2$ score")
+    axs[1].set_xlabel(r"Polynomials")
+    axs[1].set_ylabel(r"$R^2$ score")
 
+    plt.savefig("OLS.pdf")
     plt.show()
