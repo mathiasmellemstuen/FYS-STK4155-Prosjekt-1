@@ -38,5 +38,5 @@ if __name__ == "__main__":
     plt.ylabel("MSE, Variance, Bias^2")
     plt.xlabel("Polynomial degree")
     plt.legend()
-    plt.savefig("bootstrap.png")
+    plt.savefig("figures/bootstrap.pdf")
     plt.show()

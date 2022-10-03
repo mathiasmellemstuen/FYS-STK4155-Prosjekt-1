@@ -1,3 +1,4 @@
+from tkinter import W
 import numpy as np
 from mean_square_error import MSE
 from design_matrix import create_design_matrix
@@ -17,10 +18,13 @@ if __name__ == "__main__":
     y = y.ravel()
     z = z.ravel().reshape(-1,1)
 
-    max_polynomial = 10
+    max_polynomial = 13
     n_bootstraps = 500
-    nlambdas = 10
+    nlambdas = 13
     k = 10
+
+    heatmap_bootstrap_variance = np.zeros((max_polynomial, nlambdas))
+    heatmap_bootstrap_bias = np.zeros((max_polynomial, nlambdas))
 
     heatmap_bootstrap = np.zeros((max_polynomial, nlambdas))
     heatmap_crossvalidation = np.zeros((max_polynomial, nlambdas))
@@ -32,18 +36,21 @@ if __name__ == "__main__":
     for current_polynomial in range(1, max_polynomial + 1):
         X = create_design_matrix(x, y, current_polynomial)
         x_train, x_test, y_train, y_test, z_train, z_test = train_test_split(x, y, z, test_size=0.2)
+        
         for i in range(nlambdas):
             lam = lambdas[i]
             lm.set_lambda(lam)
             bootstrap_degree, bootstrap_error, bootstrap_bias, bootstrap_variance = calculate_stats_with_bootstrap(x_train, x_test, y_train, y_test, z_train, z_test, n_bootstraps, current_polynomial, lm)
-            heatmap_bootstrap[current_polynomial - 1][i] = bootstrap_error
-
             crossvalidation_error = calculate_stats_with_crossvalidation(X, z, k, lm)
+
+            heatmap_bootstrap[current_polynomial - 1][i] = bootstrap_error
+            heatmap_bootstrap_variance[current_polynomial - 1][i] = bootstrap_variance
+            heatmap_bootstrap_bias[current_polynomial - 1][i] = bootstrap_bias
             heatmap_crossvalidation[current_polynomial - 1][i] = crossvalidation_error
 
     # Plotting heatmap for bootstrap
     plt.figure()
-    plt.title(r"Heatmap of polynomial degree over $\lambda$ with bootstrap resampling")
+    plt.title(r"Heatmap of MSE with bootstrap resampling and ridge regression")
     plt.imshow(heatmap_bootstrap, cmap="inferno")
     plt.xlabel(r"$\lambda$")
     lambdas = np.around(lambdas, decimals=5)
@@ -53,8 +60,28 @@ if __name__ == "__main__":
 
     # Plotting heatmap for crossvalidation
     plt.figure()
-    plt.title(r"Heatmap of polynomial degree over $\lambda$ with crossvalidation resampling")
+    plt.title(r"Heatmap of MSE with crossvalidation resampling and ridge regression")
     plt.imshow(heatmap_crossvalidation, cmap="inferno")
+    plt.xlabel(r"$\lambda$")
+    lambdas = np.around(lambdas, decimals=5)
+    plt.xticks(np.arange(0, nlambdas), labels=lambdas)
+    plt.ylabel("Polynomial degree")
+    plt.colorbar()
+
+    # Plotting heatmap for variance, bootstrap
+    plt.figure()
+    plt.title(r"Heatmap of variance with bootstrap resampling and ridge regression")
+    plt.imshow(heatmap_bootstrap_variance, cmap="inferno")
+    plt.xlabel(r"$\lambda$")
+    lambdas = np.around(lambdas, decimals=5)
+    plt.xticks(np.arange(0, nlambdas), labels=lambdas)
+    plt.ylabel("Polynomial degree")
+    plt.colorbar()
+
+    # Plotting heatmap for bias, bootstrap
+    plt.figure()
+    plt.title(r"Heatmap of bias with bootstrap resampling and ridge regression")
+    plt.imshow(heatmap_bootstrap_bias, cmap="inferno")
     plt.xlabel(r"$\lambda$")
     lambdas = np.around(lambdas, decimals=5)
     plt.xticks(np.arange(0, nlambdas), labels=lambdas)

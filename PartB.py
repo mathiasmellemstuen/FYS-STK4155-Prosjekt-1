@@ -73,7 +73,7 @@ if __name__ == "__main__":
     axs[1].set_xlabel(r"Polynomials")
     axs[1].set_ylabel(r"$R^2$ score")
 
-    plt.savefig("OLS.pdf")
+    plt.savefig("figures/OLS.pdf")
     plt.show()
 
     #Plotting beta
@@ -83,5 +83,5 @@ if __name__ == "__main__":
     plt.ylabel(r"$\beta$ values")
     plt.xlabel(r"$\beta$ number")
     plt.legend()
-    plt.savefig("Beta_values.pdf")
+    plt.savefig("figures/Beta_values.pdf")
     plt.show()

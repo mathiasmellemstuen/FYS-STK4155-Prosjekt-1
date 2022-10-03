@@ -45,4 +45,5 @@ if __name__ == "__main__":
     plt.xlabel("Polynomials")
     plt.ylabel("MSE")
     plt.title("Comparison of crossvalidation and bootstrap")
+    plt.savefig("figures/crossvalidation.pdf")
     plt.show()
