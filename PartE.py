@@ -5,18 +5,25 @@ from sklearn.model_selection import train_test_split
 from FrankeFunction import FrankeFunctionNoised, create_data_samples_with_franke
 from linear_model import LinearModel, LinearModelType
 import matplotlib.pyplot as plt
+from bootstrap import calculate_stats_with_bootstrap
+from Cross_validation import calculate_stats_with_crossvalidation
 
 if __name__ == "__main__": 
 
     np.random.seed(1234)
 
     x, y, z = create_data_samples_with_franke()
+    x = x.ravel()
+    y = y.ravel()
+    z = z.ravel().reshape(-1,1)
 
-    max_polynomial = 5
-
+    max_polynomial = 10
+    n_bootstraps = 500
     nlambdas = 10
-    MSE_values_predict = np.zeros((max_polynomial, nlambdas))
-    MSE_values_train = np.zeros((max_polynomial, nlambdas))
+    k = 10
+
+    heatmap_bootstrap = np.zeros((max_polynomial, nlambdas))
+    heatmap_crossvalidation = np.zeros((max_polynomial, nlambdas))
 
     lambdas = np.logspace(-3, 1, nlambdas)
 
@@ -24,27 +31,34 @@ if __name__ == "__main__":
 
     for current_polynomial in range(1, max_polynomial + 1):
         X = create_design_matrix(x, y, current_polynomial)
-        X_train, X_test, z_train, z_test = train_test_split(X, z.ravel(), test_size=0.2)
+        x_train, x_test, y_train, y_test, z_train, z_test = train_test_split(x, y, z, test_size=0.2)
         for i in range(nlambdas):
             lam = lambdas[i]
             lm.set_lambda(lam)
-            lm.fit(X_train, z_train)
-            # Ridge_Beta = ridge_beta(X_train, z_train, lam)
-            #z_tilde = X_train @ Ridge_Beta
-            #z_predict = X_test @ Ridge_Beta
+            bootstrap_degree, bootstrap_error, bootstrap_bias, bootstrap_variance = calculate_stats_with_bootstrap(x_train, x_test, y_train, y_test, z_train, z_test, n_bootstraps, current_polynomial, lm)
+            heatmap_bootstrap[current_polynomial - 1][i] = bootstrap_error
 
-            z_tilde = lm.predict(X_train)
-            z_predict = lm.predict(X_test)
+            crossvalidation_error = calculate_stats_with_crossvalidation(X, z, k, lm)
+            heatmap_crossvalidation[current_polynomial - 1][i] = crossvalidation_error
 
-            MSE_values_predict[current_polynomial-1][i] = MSE(z_test, z_predict)
-            MSE_values_train[current_polynomial-1][i] = MSE(z_train, z_tilde)
-
+    # Plotting heatmap for bootstrap
     plt.figure()
-    for i in range(max_polynomial):
-        plt.plot(np.log10(lambdas), MSE_values_train[i], label = 'MSE train, pol = ' + str(i+1))
-        plt.plot(np.log10(lambdas), MSE_values_predict[i], label = 'MSE test, pol = ' + str(i+1))
+    plt.title(r"Heatmap of polynomial degree over $\lambda$ with bootstrap resampling")
+    plt.imshow(heatmap_bootstrap, cmap="inferno")
+    plt.xlabel(r"$\lambda$")
+    lambdas = np.around(lambdas, decimals=5)
+    plt.xticks(np.arange(0, nlambdas), labels=lambdas)
+    plt.ylabel("Polynomial degree")
+    plt.colorbar()
 
-    plt.xlabel('log10(lambda)')
-    plt.ylabel('MSE')
-    plt.legend()
+    # Plotting heatmap for crossvalidation
+    plt.figure()
+    plt.title(r"Heatmap of polynomial degree over $\lambda$ with crossvalidation resampling")
+    plt.imshow(heatmap_crossvalidation, cmap="inferno")
+    plt.xlabel(r"$\lambda$")
+    lambdas = np.around(lambdas, decimals=5)
+    plt.xticks(np.arange(0, nlambdas), labels=lambdas)
+    plt.ylabel("Polynomial degree")
+    plt.colorbar()
+
     plt.show()
