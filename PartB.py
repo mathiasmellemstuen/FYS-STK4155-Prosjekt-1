@@ -12,7 +12,6 @@ if __name__ == "__main__":
     np.random.seed(1234)
 
     x, y, z = create_data_samples_with_franke()
-
     # 20% of data is used for test, 80% training
     test_size = 0.2
 
@@ -22,6 +21,7 @@ if __name__ == "__main__":
     mse_values_train = []
     r2_score_values_test = []
     r2_score_values_train = []
+    beta_values = []
 
     lm = LinearModel(LinearModelType.OLS)
 
@@ -50,6 +50,10 @@ if __name__ == "__main__":
         mse_values_train.append(np.mean(MSE(y_train, y_tilde_train)))
         r2_score_values_train.append(np.mean(R2score(y_train, y_tilde_train)))
 
+        #calculating beta
+        beta = np.linalg.inv(X_test.T @ X_test) @ X_test.T @ y_tilde_test
+        beta_values.append(beta)
+
     fig, axs = plt.subplots(2)
     fig.tight_layout(pad=5.0)
 
@@ -70,4 +74,14 @@ if __name__ == "__main__":
     axs[1].set_ylabel(r"$R^2$ score")
 
     plt.savefig("OLS.pdf")
+    plt.show()
+
+    #Plotting beta
+    for i in range(len(beta_values)):
+        length = len(beta_values[i])
+        plt.plot(np.linspace(0,length, length), beta_values[i], label=r"Polynomial degree " + f"{i}")
+    plt.ylabel(r"$\beta$ values")
+    plt.xlabel(r"$\beta$ number")
+    plt.legend()
+    plt.savefig("Beta_values.pdf")
     plt.show()
