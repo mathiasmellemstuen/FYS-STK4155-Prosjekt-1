@@ -1,19 +1,17 @@
-from FrankeFunction import FrankeFunctionNoised
+from FrankeFunction import FrankeFunctionNoised, create_data_samples_with_franke
 from mean_square_error import MSE
 from r2_score import R2score
 from design_matrix import create_design_matrix
 from sklearn.model_selection import train_test_split
-from ordinary_least_squares import calc_beta
 import matplotlib.pyplot as plt
 import numpy as np
+from linear_model import LinearModel, LinearModelType
 
 if __name__ == "__main__":
 
-    # Making data, 20 samples
-    x = np.arange(0, 1, 0.05)
-    y = np.arange(0, 1, 0.05)
-    x, y = np.meshgrid(x,y)
-    z = FrankeFunctionNoised(x, y, 0.01)
+    np.random.seed(1234)
+
+    x, y, z = create_data_samples_with_franke()
 
     # 20% of data is used for test, 80% training
     test_size = 0.2
@@ -24,9 +22,8 @@ if __name__ == "__main__":
     mse_values_train = []
     r2_score_values_test = []
     r2_score_values_train = []
-    beta_values = []
-
-    plt.plot()
+    
+    lm = LinearModel(LinearModelType.OLS)
 
     # Doing calculations for each polynomial
     for current_polynominal in range(1, max_polynomial + 1): 
@@ -41,15 +38,11 @@ if __name__ == "__main__":
         y_test = (y_test - np.mean(y_test))/np.std(y_test)
 
         # Using training data to create beta
-        beta = calc_beta(X_train, y_train)
-        x_arr = np.ones(len(beta)) * current_polynominal
-        plt.scatter(x_arr, beta)
-        #beta_values.append(np.mean(beta))
-        beta_values.append(beta)
+        lm.fit(X_train, y_train)
 
         # Using beta and test data to pretict y
-        y_tilde_test = X_test @ beta
-        y_tilde_train = X_train @ beta
+        y_tilde_test = lm.predict(X_test)
+        y_tilde_train = lm.predict(X_train)
 
         # Calculating mean square error and R2 score for each polynomial
         mse_values_test.append(np.mean(MSE(y_test, y_tilde_test)))
@@ -57,7 +50,6 @@ if __name__ == "__main__":
         mse_values_train.append(np.mean(MSE(y_train, y_tilde_train)))
         r2_score_values_train.append(np.mean(R2score(y_train, y_tilde_train)))
 
-    plt.show()
     fig, axs = plt.subplots(2)
     fig.tight_layout(pad=5.0)
 
@@ -76,26 +68,5 @@ if __name__ == "__main__":
     axs[1].set_title("R2 score")
     axs[1].set_xlabel("Polynomials")
     axs[1].set_ylabel("R2 score")
-
-    # Plotting betas for each polynomial
-    #plt.figure()
-    #plt.plot(np.arange(1, max_polynomial + 1, 1), beta_values, label="Beta")
-    #plt.legend()
-    #plt.title("Beta")
-    #plt.xlabel("Polynomials")
-    #plt.ylabel("Beta")
-
-    #plt.show()
-
-    # Alternative plotting of betas
-    plt.figure()
-    plt.plot()
-    for i in range(len(beta_values)):
-        plt.plot(np.arange(1, len(beta_values[i])+1), beta_values[i], label = "pol " + str(i + 1))
-        plt.scatter(np.arange(1, len(beta_values[i])+1), beta_values[i])
-    plt.legend()
-    plt.title("Beta values for different polynomials")
-    plt.xlabel("betas")
-    plt.ylabel("value")
 
     plt.show()

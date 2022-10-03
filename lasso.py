@@ -12,12 +12,3 @@ y = y.ravel()
 z = z.ravel()
 
 alpha = 0.1
-lasso = Lasso(alpha=alpha)
-
-X = create_design_matrix(x, y, 5)
-max_polynomial = 11
-
-lasso.fit(X=X)
-
-for current_polynomial in range(0, max_polynomial):
-    pass
