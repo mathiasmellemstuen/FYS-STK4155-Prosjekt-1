@@ -1,11 +1,12 @@
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-from matplotlib import cm
+from matplotlib import cm, test
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 from random import random, seed
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+
 
 def FrankeFunction(x,y):
 
@@ -22,15 +23,6 @@ def FrankeFunctionNoised(x, y, max_noise):
     noise = np.random.normal(0, max_noise, len(x)*len(x))
     noise = noise.reshape(len(x), len(x))
     return ff + noise
-
-def create_data_samples_with_franke(max_noise = 0.01): 
-
-    x = np.arange(0, 1, 0.075)
-    y = np.arange(0, 1, 0.075)
-    x, y = np.meshgrid(x,y)
-    z = FrankeFunctionNoised(x,y,max_noise)
-
-    return x, y, z
 
 
 def plot_surface(x, y, z, z_tilde):

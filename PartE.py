@@ -3,7 +3,7 @@ import numpy as np
 from mean_square_error import MSE
 from design_matrix import create_design_matrix
 from sklearn.model_selection import train_test_split
-from FrankeFunction import FrankeFunctionNoised, create_data_samples_with_franke
+from sample_data import create_data_samples, DataSamplesType
 from linear_model import LinearModel, LinearModelType
 import matplotlib.pyplot as plt
 from bootstrap import calculate_stats_with_bootstrap
@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     np.random.seed(1234)
 
-    x, y, z = create_data_samples_with_franke()
+    x, y, z = create_data_samples(DataSamplesType.TEST)
     x = x.ravel()
     y = y.ravel()
     z = z.ravel().reshape(-1,1)

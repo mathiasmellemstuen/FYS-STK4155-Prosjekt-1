@@ -1,10 +1,10 @@
-from subprocess import CREATE_DEFAULT_ERROR_MODE
+from sample_data import create_data_samples, DataSamplesType
 import matplotlib.pyplot as plt
 import numpy as np
 from linear_model import LinearModel, LinearModelType
 from sklearn.model_selection import train_test_split
 from bootstrap import calculate_stats_with_bootstrap
-from FrankeFunction import FrankeFunctionNoised, create_data_samples_with_franke
+from FrankeFunction import FrankeFunctionNoised
 
 if __name__ == "__main__": 
 
@@ -15,7 +15,7 @@ if __name__ == "__main__":
     max_degree = 11
 
     # Making data
-    x, y, z = create_data_samples_with_franke()
+    x, y, z = create_data_samples(DataSamplesType.REAL)
 
     x = x.ravel()
     y = y.ravel()

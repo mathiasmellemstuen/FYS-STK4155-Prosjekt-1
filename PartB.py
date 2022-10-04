@@ -1,4 +1,5 @@
-from FrankeFunction import FrankeFunctionNoised, create_data_samples_with_franke
+from FrankeFunction import FrankeFunctionNoised
+from sample_data import create_data_samples, DataSamplesType
 from mean_square_error import MSE
 from r2_score import R2score
 from design_matrix import create_design_matrix
@@ -11,7 +12,8 @@ if __name__ == "__main__":
 
     np.random.seed(1234)
 
-    x, y, z = create_data_samples_with_franke()
+    x, y, z = create_data_samples(DataSamplesType.REAL)
+
     # 20% of data is used for test, 80% training
     test_size = 0.2
 
