@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     np.random.seed(1234)
 
-    real_data = False
+    real_data = True
     
     if not real_data:
         name_file1 = "figures\Heatmap_MSE_Bootstrap_Lasso.pdf"

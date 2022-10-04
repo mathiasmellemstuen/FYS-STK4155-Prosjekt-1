@@ -21,8 +21,8 @@ def create_data_samples_with_real_data(path, n):
 
 def create_data_samples_with_franke(max_noise = 0.01): 
 
-    x = np.arange(0, 1, 0.075)
-    y = np.arange(0, 1, 0.075)
+    x = np.arange(0, 1, 0.01)
+    y = np.arange(0, 1, 0.01)
     x, y = np.meshgrid(x,y)
     z = FrankeFunctionNoised(x,y,max_noise)
 

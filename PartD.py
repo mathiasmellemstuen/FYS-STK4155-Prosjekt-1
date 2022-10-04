@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     else:
         name_file = "KFOLD_Real_"
-        x, y, z = create_data_samples(DataSamplesType.REAL, real_data_n=1000)
+        x, y, z = create_data_samples(DataSamplesType.REAL, real_data_n=100)
       
     x = x.ravel()
     y = y.ravel()

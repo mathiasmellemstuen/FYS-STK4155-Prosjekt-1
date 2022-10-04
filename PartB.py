@@ -23,7 +23,7 @@ if __name__ == "__main__":
     else:
         name_ols_file = "OLS_Real.pdf"
         name_beta_file = "Beta_values_Real.pdf"
-        x, y, z = create_data_samples(DataSamplesType.REAL)
+        x, y, z = create_data_samples(DataSamplesType.REAL, real_data_n=100)
         
 
     # 20% of data is used for test, 80% training
