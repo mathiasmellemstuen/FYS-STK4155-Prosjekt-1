@@ -11,11 +11,19 @@ from bootstrap import calculate_stats_with_bootstrap
 
 if __name__ == "__main__": 
 
+    # Making data
     np.random.seed(1234)
 
-    # Making data
-    x, y, z = create_data_samples(DataSamplesType.REAL)
+    real_data = True
+    
+    if not real_data:
+        name_file = "KFOLD_"
+        x, y, z = create_data_samples(DataSamplesType.TEST)
 
+    else:
+        name_file = "KFOLD_Real_"
+        x, y, z = create_data_samples(DataSamplesType.REAL, real_data_n=1000)
+      
     x = x.ravel()
     y = y.ravel()
     z = z.ravel().reshape(-1,1)
@@ -50,5 +58,6 @@ if __name__ == "__main__":
     plt.xlabel(r"Polynomials")
     plt.ylabel(r"MSE")
     plt.title(r"Comparison of crossvalidation and bootstrap for $k=5$ folds")
-    plt.savefig(f"figures\KFOLD_{str(k)}.pdf")
+    plt.tight_layout()
+    plt.savefig(f"figures\{name_file}{str(k)}.pdf")
     plt.show()

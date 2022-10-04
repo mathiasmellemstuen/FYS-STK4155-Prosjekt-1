@@ -22,8 +22,8 @@ if __name__ == "__main__":
         name_file = "bootstrap.pdf"
         x, y, z = create_data_samples(DataSamplesType.TEST)
     else:
-        name_file = "bootstrap_Real_1000.pdf"
-        x, y, z = create_data_samples(DataSamplesType.REAL, real_data_n=1000)
+        name_file = "bootstrap_Real.pdf"
+        x, y, z = create_data_samples(DataSamplesType.REAL, real_data_n=100)
 
     x = x.ravel()
     y = y.ravel()

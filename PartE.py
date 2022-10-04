@@ -13,7 +13,22 @@ if __name__ == "__main__":
 
     np.random.seed(1234)
 
-    x, y, z = create_data_samples(DataSamplesType.TEST)
+    real_data = False
+    
+    if not real_data:
+        name_file1 = "figures\Heatmap_MSE_Bootstrap_Ridge.pdf"
+        name_file2 = "figures\Heatmap_MSE_Crossvalidation_Ridge.pdf"
+        name_file3 = "figures\Heatmap_Variance_Bootstrap_Ridge.pdf"
+        name_file4 = "figures\Heatmap_Bias_Bootstrap_Ridge.pdf"
+        x, y, z = create_data_samples(DataSamplesType.TEST)
+
+    else:
+        name_file1 = "figures\Heatmap_MSE_Bootstrap_Ridge_Real.pdf"
+        name_file2 = "figures\Heatmap_MSE_Crossvalidation_Ridge_Real.pdf"
+        name_file3 = "figures\Heatmap_Variance_Bootstrap_Ridge_Real.pdf"
+        name_file4 = "figures\Heatmap_Bias_Bootstrap_Ridge_Real.pdf"
+        x, y, z = create_data_samples(DataSamplesType.REAL, real_data_n=100)
+      
     x = x.ravel()
     y = y.ravel()
     z = z.ravel().reshape(-1,1)
@@ -53,39 +68,47 @@ if __name__ == "__main__":
     plt.title(r"Heatmap of MSE with bootstrap resampling and ridge regression")
     plt.imshow(heatmap_bootstrap, cmap="inferno")
     plt.xlabel(r"$\lambda$")
+    plt.gcf().autofmt_xdate()
     lambdas = np.around(lambdas, decimals=5)
     plt.xticks(np.arange(0, nlambdas), labels=lambdas)
     plt.ylabel("Polynomial degree")
     plt.colorbar()
+    plt.savefig(f"{name_file1}")
 
     # Plotting heatmap for crossvalidation
     plt.figure()
     plt.title(r"Heatmap of MSE with crossvalidation resampling and ridge regression")
     plt.imshow(heatmap_crossvalidation, cmap="inferno")
     plt.xlabel(r"$\lambda$")
+    plt.gcf().autofmt_xdate()
     lambdas = np.around(lambdas, decimals=5)
     plt.xticks(np.arange(0, nlambdas), labels=lambdas)
     plt.ylabel("Polynomial degree")
     plt.colorbar()
+    plt.savefig(f"{name_file2}")
 
     # Plotting heatmap for variance, bootstrap
     plt.figure()
     plt.title(r"Heatmap of variance with bootstrap resampling and ridge regression")
     plt.imshow(heatmap_bootstrap_variance, cmap="inferno")
     plt.xlabel(r"$\lambda$")
+    plt.gcf().autofmt_xdate()
     lambdas = np.around(lambdas, decimals=5)
     plt.xticks(np.arange(0, nlambdas), labels=lambdas)
     plt.ylabel("Polynomial degree")
     plt.colorbar()
+    plt.savefig(f"{name_file3}")
 
     # Plotting heatmap for bias, bootstrap
     plt.figure()
     plt.title(r"Heatmap of bias with bootstrap resampling and ridge regression")
     plt.imshow(heatmap_bootstrap_bias, cmap="inferno")
     plt.xlabel(r"$\lambda$")
+    plt.gcf().autofmt_xdate()
     lambdas = np.around(lambdas, decimals=5)
     plt.xticks(np.arange(0, nlambdas), labels=lambdas)
     plt.ylabel("Polynomial degree")
     plt.colorbar()
+    plt.savefig(f"{name_file4}")
 
     plt.show()
