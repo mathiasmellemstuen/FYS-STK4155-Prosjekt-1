@@ -3,8 +3,8 @@ import numpy as np
 from mean_square_error import MSE
 from design_matrix import create_design_matrix
 from sklearn.model_selection import train_test_split
-from FrankeFunction import FrankeFunctionNoised, create_data_samples_with_franke
 import matplotlib.pyplot as plt
+from sample_data import create_data_samples, DataSamplesType
 from linear_model import LinearModel, LinearModelType
 from Cross_validation import calculate_stats_with_crossvalidation
 from bootstrap import calculate_stats_with_bootstrap
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     np.random.seed(1234)
 
     # Making data
-    x, y, z = create_data_samples_with_franke()
+    x, y, z = create_data_samples(DataSamplesType.REAL)
 
     x = x.ravel()
     y = y.ravel()
@@ -32,6 +32,11 @@ if __name__ == "__main__":
     # For bootstrap
     x_train, x_test, y_train, y_test, z_train, z_test = train_test_split(x, y, z, test_size=0.2)
 
+    x_train = (x_train - np.mean(x_train))/np.std(x_train)
+    x_test = (x_test - np.mean(x_test))/np.std(x_test)
+    y_train = (y_train - np.mean(y_train))/np.std(y_train)
+    y_test = (y_test - np.mean(y_test))/np.std(y_test)
+
     for degree in range(0, max_degree): 
         X = create_design_matrix(x, y, degree)
         crossvalidation_error[degree] = calculate_stats_with_crossvalidation(X, z, k, lm)
@@ -45,5 +50,5 @@ if __name__ == "__main__":
     plt.xlabel(r"Polynomials")
     plt.ylabel(r"MSE")
     plt.title(r"Comparison of crossvalidation and bootstrap for $k=5$ folds")
-    plt.savefig("KFOLD_5.pdf")
+    plt.savefig(f"figures\KFOLD_{str(k)}.pdf")
     plt.show()

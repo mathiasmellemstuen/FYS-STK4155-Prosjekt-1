@@ -1,4 +1,5 @@
-from FrankeFunction import FrankeFunctionNoised, create_data_samples_with_franke
+from FrankeFunction import FrankeFunctionNoised
+from sample_data import create_data_samples, DataSamplesType, create_data_samples_with_franke
 from mean_square_error import MSE
 from r2_score import R2score
 from design_matrix import create_design_matrix
@@ -15,22 +16,15 @@ if __name__ == "__main__":
     real_data = True
     
     if not real_data:
-        #Creating random data
-        x, y, z = create_data_samples_with_franke()
         name_ols_file = "OLS.pdf"
         name_beta_file = "Beta_values.pdf"
-    else:
-        #Fetching real life data
-        terrain = imread('SRTM_data_Norway_1.tif')
-        N = 1000
-        terrain = terrain[:N,:N]
-        x = np.linspace(0,1, np.shape(terrain)[0])
-        y = np.linspace(0,1, np.shape(terrain)[1])
-        x, y = np.meshgrid(x,y)
-        z = terrain
+        x, y, z = create_data_samples(DataSamplesType.TEST)
 
+    else:
         name_ols_file = "OLS_Real.pdf"
         name_beta_file = "Beta_values_Real.pdf"
+        x, y, z = create_data_samples(DataSamplesType.REAL)
+        
 
     # 20% of data is used for test, 80% training
     test_size = 0.2
@@ -93,7 +87,7 @@ if __name__ == "__main__":
     axs[1].set_xlabel(r"Polynomials")
     axs[1].set_ylabel(r"$R^2$ score")
 
-    plt.savefig(name_ols_file)
+    plt.savefig(f"figures\{name_ols_file}")
     plt.show()
 
     #Plotting beta
@@ -103,5 +97,5 @@ if __name__ == "__main__":
     plt.ylabel(r"$\beta$ values")
     plt.xlabel(r"$\beta$ number")
     plt.legend()
-    plt.savefig(name_beta_file)
+    plt.savefig(f"figures\{name_beta_file}")
     plt.show()

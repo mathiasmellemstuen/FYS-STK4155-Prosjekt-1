@@ -1,10 +1,10 @@
-from subprocess import CREATE_DEFAULT_ERROR_MODE
+from sample_data import create_data_samples, DataSamplesType
 import matplotlib.pyplot as plt
 import numpy as np
 from linear_model import LinearModel, LinearModelType
 from sklearn.model_selection import train_test_split
 from bootstrap import calculate_stats_with_bootstrap
-from FrankeFunction import FrankeFunctionNoised, create_data_samples_with_franke
+from FrankeFunction import FrankeFunctionNoised
 
 if __name__ == "__main__": 
 
@@ -15,7 +15,15 @@ if __name__ == "__main__":
     max_degree = 14
 
     # Making data
-    x, y, z = create_data_samples_with_franke()
+    
+    real_data = True
+    
+    if not real_data:
+        name_file = "bootstrap.pdf"
+        x, y, z = create_data_samples(DataSamplesType.TEST)
+    else:
+        name_file = "bootstrap_Real_1000.pdf"
+        x, y, z = create_data_samples(DataSamplesType.REAL, real_data_n=1000)
 
     x = x.ravel()
     y = y.ravel()
@@ -38,5 +46,5 @@ if __name__ == "__main__":
     plt.ylabel(r"MSE, Variance, $Bias^2$")
     plt.xlabel(r"Polynomial degree")
     plt.legend()
-    plt.savefig("bootstrap.pdf")
+    plt.savefig(f"figures\{name_file}")
     plt.show()
