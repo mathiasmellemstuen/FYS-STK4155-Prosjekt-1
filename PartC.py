@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     n_bootstraps = 500
     start_degree = 0
-    max_degree = 11
+    max_degree = 14
 
     # Making data
     x, y, z = create_data_samples_with_franke()
@@ -32,11 +32,11 @@ if __name__ == "__main__":
     for degree in range(start_degree, max_degree):
         polydegree[degree], error[degree], bias[degree], variance[degree] = calculate_stats_with_bootstrap(x_train, x_test, y_train, y_test, z_train, z_test, n_bootstraps, degree, lm)
 
-    plt.plot(polydegree, error, label='Error')
-    plt.plot(polydegree, bias, label='bias')
-    plt.plot(polydegree, variance, label='Variance')
-    plt.ylabel("MSE, Variance, Bias^2")
-    plt.xlabel("Polynomial degree")
+    plt.plot(polydegree, error, label=r'Error')
+    plt.plot(polydegree, bias, label=r'bias')
+    plt.plot(polydegree, variance, label=r'Variance')
+    plt.ylabel(r"MSE, Variance, $Bias^2$")
+    plt.xlabel(r"Polynomial degree")
     plt.legend()
-    plt.savefig("bootstrap.png")
+    plt.savefig("bootstrap.pdf")
     plt.show()

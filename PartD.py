@@ -21,8 +21,8 @@ if __name__ == "__main__":
     z = z.ravel().reshape(-1,1)
 
     n_bootstraps = 500
-    k = 18
-    max_degree = 11
+    k = 5
+    max_degree = 12
 
     lm = LinearModel(LinearModelType.OLS)
 
@@ -42,7 +42,8 @@ if __name__ == "__main__":
     plt.plot(np.arange(0, degree + 1, 1), crossvalidation_error, label="Crossvalidation error")
     plt.plot(np.arange(0, degree + 1, 1), bootstrap_error, label="Bootstrap error")
     plt.legend()
-    plt.xlabel("Polynomials")
-    plt.ylabel("MSE")
-    plt.title("Comparison of crossvalidation and bootstrap")
+    plt.xlabel(r"Polynomials")
+    plt.ylabel(r"MSE")
+    plt.title(r"Comparison of crossvalidation and bootstrap for $k=5$ folds")
+    plt.savefig("KFOLD_5.pdf")
     plt.show()

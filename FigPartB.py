@@ -32,16 +32,16 @@ def plot_MSE_variance(x,y):
     n_arr = np.array([i for i in range(1,num)])
     plt.plot(n_arr, mse_arr_train, label= "MSE_train")
     plt.plot(n_arr, mse_arr_test, label= "MSE_test")
-    plt.xlabel("Polynomials")
-    plt.ylabel("MSE")
+    plt.xlabel(r"Polynomials")
+    plt.ylabel(r"MSE")
     plt.legend()
-    plt.savefig("MSE_test_train.png")
+    plt.savefig("MSE_test_train.pdf")
     plt.show()
 
 
 if __name__ == "__main__":
     np.random.seed(12)
-    x = np.arange(0, 1, 0.01)   
+    x = np.arange(0, 1, 0.01)  
     y = np.arange(0, 1, 0.01)
     x, y = np.meshgrid(x,y)
     plot_MSE_variance(x,y)
