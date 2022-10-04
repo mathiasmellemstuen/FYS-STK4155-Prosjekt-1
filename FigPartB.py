@@ -4,14 +4,18 @@ from FrankeFunction import FrankeFunctionNoised
 from design_matrix import create_design_matrix
 from sklearn.model_selection import train_test_split
 from mean_square_error import MSE
+from sample_data import create_data_samples, DataSamplesType
 
 
-def plot_MSE_variance(x,y):
+
+
+def plot_MSE_variance(x,y, name):
     num = 14
     val = 0.1
     mse_arr_train = np.zeros(num-1)
     mse_arr_test = np.zeros(num-1)
     for i in range(1,num):
+        print(f"polynomial {i} out of {num}")
         z = FrankeFunctionNoised(x,y, val)
         z = z.ravel()
         X = create_design_matrix(x,y, i)
@@ -35,13 +39,22 @@ def plot_MSE_variance(x,y):
     plt.xlabel(r"Polynomials")
     plt.ylabel(r"MSE")
     plt.legend()
-    plt.savefig("MSE_test_train.pdf")
+    plt.savefig(f"figures\{name}")
     plt.show()
 
 
 if __name__ == "__main__":
     np.random.seed(12)
-    x = np.arange(0, 1, 0.01)  
-    y = np.arange(0, 1, 0.01)
-    x, y = np.meshgrid(x,y)
-    plot_MSE_variance(x,y)
+
+    real_data = True
+    
+    if not real_data:
+        name_file = "MSE_test_train.pdf"
+        x = np.arange(0, 1, 0.01)  
+        y = np.arange(0, 1, 0.01)
+        x, y = np.meshgrid(x,y)
+    else:
+        name_file = "MSE_test_train_Real.pdf"
+        x, y, z = create_data_samples(DataSamplesType.REAL)
+
+    plot_MSE_variance(x,y, name_file)

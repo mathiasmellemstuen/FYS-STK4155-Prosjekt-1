@@ -11,7 +11,7 @@ class LinearModel:
     def __init__(self, linear_model_type: LinearModelType):
         self.current_linear_model_type = linear_model_type
         self.lmda = 1
-        self.lasso_model = Lasso(alpha = self.lmda, fit_intercept=False, max_iter=2000)
+        self.lasso_model = Lasso(alpha = self.lmda, fit_intercept=False, max_iter=1000, tol=0.1, normalize=True)
         self.betas = None
 
     def fit(self, X, y):
@@ -43,7 +43,7 @@ class LinearModel:
 
     def set_lambda(self, lmda):
         self.lmda = lmda
-        self.lasso_model = Lasso(alpha = self.lmda, fit_intercept=False, max_iter=2000)
+        self.lasso_model = Lasso(alpha = self.lmda, fit_intercept=False, max_iter=1000, tol=0.01, normalize=True)
 
     def set_linear_model_type(self, type: LinearModelType): 
         self.current_linear_model_type = type
