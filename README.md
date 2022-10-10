@@ -1,5 +1,5 @@
 # FYS-STK4155-Prosjekt-1
-First project in FYS-STK4155 with deadline 07.10.2022.
+First project in FYS-STK4155 with deadline 11.10.2022.
 
 ## Prerequisites for running
 
